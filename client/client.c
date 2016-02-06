@@ -46,6 +46,11 @@ int main(int argc, char* argv[]) {
         case UPLOAD:
             break;
         case TIME:
+            // Print the time
+            wait_until(message.delay);
+            struct timespec ts = {0};
+            clock_gettime(CLOCK_REALTIME, &ts);
+            printf("Seconds: %ld\nNano Seconds: %ld\n", ts.tv_sec, ts.tv_nsec);
             break;
         }
     }

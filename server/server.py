@@ -8,7 +8,7 @@ from twisted.internet import protocol, reactor
 
 # CONFIGURATION CONSTANTS
 MONITORS_WIDE = 2
-MONITORS_HIGH = 2
+MONITORS_HIGH = 1
 
 DELAY = 3 # In seconds
 
@@ -46,9 +46,11 @@ class MultiScreenProtocol(protocol.BaseProtocol):
 
 
     def connectionMade(self):
+        print "New Connection"
         self.factory.clients.append(self)
 
     def connectionLost(self, reason):
+        print "Lost Connection"
         self.factory.clients.remove(self)
 
     def dataRecieved(self, data):
@@ -102,7 +104,7 @@ class MultiScreenFactory(protocol.ServerFactory):
             c.transport.write(c_command)
 
 
-            if command[0] in ["PLAY", "PAUSE"]:
+            if command[0] in ["PLAY", "PAUSE", "TIME"]:
                 delay = int(time.time()) + DELAY
                 c_delay = struct.pack('I', delay)
                 c.transport.write(c_delay)

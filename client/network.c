@@ -99,7 +99,8 @@ void Connection_recvMessage(Connection* conn, Message* message, const char* file
         download_file(conn->sockfd, download, contentLength, 1024);
         printf("Download Finished\n");
         fclose(download);
-    } else if (message->command == PLAY || message->command == PAUSE) {
+    } else if (message->command == PLAY || message->command == PAUSE
+               || message->command == TIME) {
         buffered_recv(conn->sockfd, &message->delay, sizeof(unsigned int));
     } 
 }
