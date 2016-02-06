@@ -7,7 +7,7 @@ from threading import Thread
 from twisted.internet import protocol, reactor
 
 # CONFIGURATION CONSTANTS
-MONITORS_WIDE = 2
+MONITORS_WIDE = 1
 MONITORS_HIGH = 1
 
 DELAY = 3 # In seconds
@@ -72,7 +72,7 @@ class MultiScreenFactory(protocol.ServerFactory):
 
         for index, client in enumerate(self.clients):
             x = relative_width * (index % MONITORS_WIDE)
-            y = relative_height * (index % MONITORS_HIGH)
+            y = relative_height * (index / MONITORS_WIDE)
 
             new_video = "/tmp/%s.mp4" % index
             crop_video(filename, new_video, relative_width, relative_height, x, y)

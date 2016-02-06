@@ -60,7 +60,7 @@ int render_thread(void* arg) {
                                           SDL_WINDOWPOS_UNDEFINED,
                                           videoPlayer->codecCtx->width,
                                           videoPlayer->codecCtx->height,
-                                          SDL_RENDERER_ACCELERATED);
+                                          SDL_WINDOW_FULLSCREEN_DESKTOP);
 
     // Create SDL renderer (Roughly an SDL2 equivelant to an overlay that has GPU acceleration)
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
