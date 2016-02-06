@@ -80,7 +80,7 @@ int render_thread(void* arg) {
     // by trying it with the actual framerate given (25 I believe and runs incredibly
     // choppy). So we just hardcode 60 for concept purposes
     //unsigned int framerate = videoPlayer->codecCtx->framerate.num;
-    unsigned int framerate = 60;
+    unsigned int framerate = 100;
     unsigned  milliseconds_per_frame = 1000 / framerate;
     Uint32 start_time = 0;
     Uint32 end_time = 0;
