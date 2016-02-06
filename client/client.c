@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 #include "network.h"
 #include "video.h"
@@ -7,6 +8,11 @@
 
 #define DOWNLOAD_LOCATION "download.mp4"
 
+
+void wait_until(unsigned int delay) {
+    struct timespec ts = {delay, 0};
+    clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &ts, NULL);
+}
 
 int main(int argc, char* argv[]) {
 
@@ -30,9 +36,11 @@ int main(int argc, char* argv[]) {
             videoPlayer = VideoPlayer_create(DOWNLOAD_LOCATION);
             break;
         case PLAY:
+            wait_until(message.delay);
             VideoPlayer_play();
             break;
         case PAUSE:
+            wait_until(message.delay);
             VideoPlayer_pause();
             break;
         case UPLOAD:

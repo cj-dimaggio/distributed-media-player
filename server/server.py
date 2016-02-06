@@ -1,9 +1,12 @@
 import os
 import sys
 import struct
+import time
 from threading import Thread
 from twisted.internet import protocol, reactor
 
+
+DELAY = 3 # In seconds
 
 class MultiScreenProtocol(protocol.BaseProtocol):
 
@@ -43,7 +46,7 @@ class MultiScreenFactory(protocol.ServerFactory):
         The server's protocol is incredibly simple and is as follows:
         * Send a sequence number, an unsigned long
         * Send an unsigned char representing the base command (according to the ENUM dict)
-        * If the command is PLAY or PAUSE then the server's message is complete
+        * If the command is PLAY or PAUSE then the server will then send an unsigned int with the unix time to execute the command
         * If the command is UPLOAD the server will send an unsigned long with the length, in bytes, of the upload
         * The server will then send the data 
         """
@@ -62,8 +65,14 @@ class MultiScreenFactory(protocol.ServerFactory):
             c_command = struct.pack('B', MultiScreenProtocol.ENUM.get(command[0]))
             c.transport.write(c_command)
 
-            print videos
-            if videos:
+
+            if command[0] in ["PLAY", "PAUSE"]:
+                delay = int(time.time()) + DELAY
+                c_delay = struct.pack('I', delay)
+                c.transport.write(c_delay)
+
+            # If we're doing an upload
+            elif videos:
                 f = videos[index]
 
                 # Send file size
@@ -80,6 +89,7 @@ class MultiScreenFactory(protocol.ServerFactory):
                         c.transport.write(chunk)
                     else:
                         break
+                f.close()
 
         self.sequence += 1
 
