@@ -24,10 +24,13 @@ def get_video_dimenstions(filename):
     return width, height
 
 
-def crop_video(source_filename, dest_filename, x, y, width, height):
+def crop_video(source_filename, dest_filename, width, height, x, y):
+    comd = ('ffmpeg -i %s -filter:v crop=%s:%s:%s:%s -c:a copy %s'
+        % (source_filename, width, height, x, y, dest_filename))
+
+    print comd
     proc = subprocess.Popen(
-        ('ffmpeg -i %s -filter:v "crop=%s:%s:%s:%s" -c:a copy %s'
-        % (source_filename, width, height, x, y, dest_filename)).split()
+        comd.split()
     )
     proc.communicate()
 
