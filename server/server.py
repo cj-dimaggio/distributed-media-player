@@ -2,11 +2,34 @@ import os
 import sys
 import struct
 import time
+import subprocess
 from threading import Thread
 from twisted.internet import protocol, reactor
 
+# CONFIGURATION CONSTANTS
+MONITORS_WIDE = 2
+MONITORS_HIGH = 2
 
 DELAY = 3 # In seconds
+
+
+def get_video_dimenstions(filename):
+    proc = subprocess.Popen(
+        ('ffprobe -v error -show_entries stream=width,height -of default=noprint_wrappers=1 %s'
+         % filename).split(), stdout=subprocess.PIPE)
+    output = proc.communicate()[0].split('\n')
+    width = int(output[0].split('=')[1])
+    height = int(output[1].split('=')[1])
+
+    return width, height
+
+
+def crop_video(source_filename, dest_filename, x, y, width, height):
+    proc = subprocess.Popen(
+        ('ffmpeg -i %s -filter:v "crop=%s:%s:%s:%s" -c:a copy %s'
+        % (source_filename, width, height, x, y, dest_filename)).split()
+    )
+    proc.communicate()
 
 class MultiScreenProtocol(protocol.BaseProtocol):
 
@@ -37,8 +60,18 @@ class MultiScreenFactory(protocol.ServerFactory):
     def getClientVideos(self, filename):
         filename = os.path.expanduser(filename);
         videos = list()
-        for client in self.clients:
-            videos.append(open(filename))
+
+        width, height = get_video_dimenstions(filename)
+        relative_width = width / MONITORS_WIDE
+        relative_height = height / MONITORS_HIGH
+
+        for index, client in enumerate(self.clients):
+            x = relative_width * (index % MONITORS_WIDE)
+            y = relative_height * (index % MONITORS_HIGH)
+
+            new_video = "/tmp/%s.mp4" % index
+            crop_video(filename, new_video, relative_width, relative_height, x, y)
+            videos.append(open(new_video))
         return videos
 
     def sendCommand(self, command):

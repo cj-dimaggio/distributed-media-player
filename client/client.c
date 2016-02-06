@@ -6,7 +6,7 @@
 #include "video.h"
 
 
-#define DOWNLOAD_LOCATION "download.mp4"
+#define DOWNLOAD_LOCATION "/tmp/download.mp4"
 
 
 void wait_until(unsigned int delay) {
